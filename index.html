@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Hoagland Lab Calc</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background-color: #eef2f3; color: #333; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        h2 { color: #2e7d32; margin-top: 0; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
+        h4 { margin-bottom: 5px; color: #555; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        .field { flex: 1; }
+        label { font-size: 0.85em; font-weight: bold; display: block; margin-bottom: 5px; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: #2e7d32; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 1.1em; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #1b5e20; }
+        #output { margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 5px solid #2e7d32; border-radius: 4px; }
+        .res-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .unit { color: #888; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Hoagland Lab Calc</h2>
+    
+    <h4>1. Pot Setup</h4>
+    <div class="input-group">
+        <div class="field">
+            <label>No. of Pots</label>
+            <input type="number" id="pots" value="21">
+        </div>
+        <div class="field">
+            <label>ml per Pot</label>
+            <input type="number" id="mlPerPot" value="20">
+        </div>
+    </div>
+
+    <h4>2. Solution Recipe (per 1 Liter)</h4>
+    <div class="field">
+        <label>Macros (ml/L)</label>
+        <input type="number" id="ratioMacro" value="10">
+    </div>
+    <div class="input-group">
+        <div class="field">
+            <label>Micros (µl/L)</label>
+            <input type="number" id="ratioMicro" value="500">
+        </div>
+        <div class="field">
+            <label>Fe-EDTA (µl/L)</label>
+            <input type="number" id="ratioFe" value="500">
+        </div>
+    </div>
+    
+    <button onclick="calculate()">Generate Mix Instructions</button>
+
+    <div id="output" style="display:none;">
+        <div class="res-row"><strong>Total Solution Volume:</strong> <span id="totalV">0</span> ml</div>
+        <div class="res-row"><span>Macros:</span> <strong><span id="macro">0</span> ml</strong></div>
+        <div class="res-row"><span>Micros:</span> <strong><span id="micro">0</span> µl</strong></div>
+        <div class="res-row"><span>Fe-EDTA:</span> <strong><span id="fe">0</span> µl</strong></div>
+        <div class="res-row" style="color: #007bff;"><span>Water to add:</span> <strong><span id="water">0</span> ml</strong></div>
+    </div>
+</div>
+
+<script>
+function calculate() {
+    // Get Setup Values
+    const pots = parseFloat(document.getElementById('pots').value);
+    const dose = parseFloat(document.getElementById('mlPerPot').value);
+    
+    // Get Custom Recipe Values
+    const rMacro = parseFloat(document.getElementById('ratioMacro').value);
+    const rMicro = parseFloat(document.getElementById('ratioMicro').value);
+    const rFe = parseFloat(document.getElementById('ratioFe').value);
+    
+    const totalVolume = pots * dose; 
+    
+    // Calculation Logic
+    const macroVal = (rMacro * totalVolume) / 1000;
+    const microVal = (rMicro * totalVolume) / 1000; 
+    const feVal = (rFe * totalVolume) / 1000;    
+    
+    // Water = Total - (Macro ml + Micro converted to ml + Fe converted to ml)
+    const waterNeeded = totalVolume - macroVal - (microVal/1000) - (feVal/1000);
+
+    // Display
+    document.getElementById('totalV').innerText = totalVolume.toFixed(0);
+    document.getElementById('macro').innerText = macroVal.toFixed(2);
+    document.getElementById('micro').innerText = microVal.toFixed(1);
+    document.getElementById('fe').innerText = feVal.toFixed(1);
+    document.getElementById('water').innerText = waterNeeded.toFixed(2);
+    document.getElementById('output').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
